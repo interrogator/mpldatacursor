@@ -716,7 +716,8 @@ class HighlightingDataCursor(DataCursor):
             The color to set the highlighted artist to. Setting to False/None
             will preserve the line's original color. Default: yellow
         highlight_width : number, optional
-            The width of the highlighted artist. Default: 3
+            The width of the highlighted artist. Setting to False/None
+            will preserve the line's original width. Default: 3
         """
         self.highlight_color = kwargs.pop('highlight_color', 'yellow')
         self.highlight_width = kwargs.pop('highlight_width', 3)
@@ -748,14 +749,15 @@ class HighlightingDataCursor(DataCursor):
     def create_highlight(self, artist):
         """Create a new highlight for the given artist."""
         highlight = copy.copy(artist)
-        if not self.highlight_color:
-            high_col = artist.get_color()
-        else:
-            high_col = self.highlight_color
-        highlight.set(color=high_col, mec=self.highlight_color,
-                      lw=self.highlight_width, mew=self.highlight_width,
-                      picker=None)
-
+        # only change color if self.highlight_color evals to True
+        new_line_style = {}
+        if self.highlight_color:
+            new_line_style['color'] = self.highlight_color
+            new_line_style['mec'] = self.highlight_color
+        if self.highlight_width:
+            new_line_style['lw'] = self.highlight_width
+            new_line_style['mew'] = self.highlight_width 
+        highlight.set(picker=None, **new_line_style)
         artist.axes.add_artist(highlight)
         return highlight
 
