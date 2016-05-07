@@ -713,7 +713,8 @@ class HighlightingDataCursor(DataCursor):
         Parameters
         ----------
         highlight_color : a valid color specifier (string or tuple), optional
-            The color to set the highlighted artist to. Default: yellow
+            The color to set the highlighted artist to. Setting to False/None
+            will preserve the line's original color. Default: yellow
         highlight_width : number, optional
             The width of the highlighted artist. Default: 3
         """
@@ -747,9 +748,14 @@ class HighlightingDataCursor(DataCursor):
     def create_highlight(self, artist):
         """Create a new highlight for the given artist."""
         highlight = copy.copy(artist)
-        highlight.set(color=self.highlight_color, mec=self.highlight_color,
+        if not self.highlight_color:
+            high_col = artist.get_color()
+        else:
+            high_col = self.highlight_color
+        highlight.set(color=high_col, mec=self.highlight_color,
                       lw=self.highlight_width, mew=self.highlight_width,
                       picker=None)
+
         artist.axes.add_artist(highlight)
         return highlight
 
